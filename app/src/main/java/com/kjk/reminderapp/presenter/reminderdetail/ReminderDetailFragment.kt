@@ -1,6 +1,8 @@
 package com.kjk.reminderapp.presenter.reminderdetail
 
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.kjk.reminderapp.R
+import com.kjk.reminderapp.data.local.ReminderDatabase
 import com.kjk.reminderapp.databinding.FragmentReminderDetailBinding
 
 /**
@@ -22,12 +25,18 @@ class ReminderDetailFragment : Fragment() {
      */
     private lateinit var binding: FragmentReminderDetailBinding
 
+
+    /**
+     * viewModelFactory
+     */
+    private lateinit var viewModelFactory: ReminderViewModelFactory
+
+
     /**
      *  viewModel
      */
-    private val viewModel: ReminderDetailViewModel by lazy {
-        ViewModelProvider(this).get(ReminderDetailViewModel::class.java)
-    }
+    private lateinit var viewModel: ReminderDetailViewModel
+
 
     /**
      *  onCreateView
@@ -45,6 +54,24 @@ class ReminderDetailFragment : Fragment() {
             false
         )
 
+        // init viewModel
+        val application = requireNotNull(activity).application
+        val dataSource = ReminderDatabase.getInstance(application).reminderDatabaseDao
+
+        //safe-args
+        val arguments = ReminderDetailFragmentArgs.fromBundle(requireArguments())
+        Log.d(TAG, "onCreateView: ${arguments.reminder.title}")
+
+        // init viewModel
+        viewModelFactory = ReminderViewModelFactory(dataSource, arguments.reminder)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(ReminderDetailViewModel::class.java)
+
+        // init databinding
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
+
+
+        //
         initLayout()
 
         return binding.root
@@ -52,7 +79,6 @@ class ReminderDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         observe()
     }
 
@@ -60,7 +86,7 @@ class ReminderDetailFragment : Fragment() {
      *  layout 초기화
      */
     private fun initLayout() {
-
+        setTimePicker()
     }
 
 
@@ -72,7 +98,7 @@ class ReminderDetailFragment : Fragment() {
             if (toMove) {
                 // HomeFragment로 이동
                 moveToHomeFragment()
-                viewModel.navigateToHomeDone()
+                viewModel.onSaveClickEventDone()
             }
         })
     }
@@ -85,5 +111,23 @@ class ReminderDetailFragment : Fragment() {
         this.findNavController()
             .navigate(ReminderDetailFragmentDirections
                 .actionReminderDetailFragmentToReminderHomeFragment())
+    }
+
+
+    /**
+     *  setTimePickerDialog
+     */
+    private fun setTimePicker() {
+        binding.timePicker.apply { 
+            setOnTimeChangedListener { view, hourOfDay, minute ->
+                Log.d(TAG, "setTimePicker: ${hourOfDay}, ${minute}")
+                // database에 저장하기위해, 지정한 알림 시간을 milliseconds로 변환.
+                viewModel.setRemindTime(hourOfDay, minute)
+            }
+        }
+    }
+
+    companion object {
+        private const val TAG = "DetailFragment"
     }
 }

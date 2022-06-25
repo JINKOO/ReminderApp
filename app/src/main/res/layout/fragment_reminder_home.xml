@@ -54,7 +54,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/add_reminder_linearlayout" />
+            app:layout_constraintTop_toBottomOf="@+id/add_reminder_linearlayout"
+            app:reminderList="@{viewModel.reminders}"/>
 
         <TextView
             android:id="@+id/empty_reminder_list_textview"
@@ -67,7 +68,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/reminder_recyclerview"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            app:emptyReminderText="@{viewModel.reminders}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

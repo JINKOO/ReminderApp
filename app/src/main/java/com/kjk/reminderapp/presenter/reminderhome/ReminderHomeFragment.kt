@@ -12,7 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kjk.reminderapp.R
+import com.kjk.reminderapp.data.local.ReminderEntity
 import com.kjk.reminderapp.databinding.FragmentReminderHomeBinding
+import com.kjk.reminderapp.presenter.adapter.OnItemClickListener
 import com.kjk.reminderapp.presenter.adapter.RemindersAdapter
 
 /**
@@ -39,7 +41,10 @@ class ReminderHomeFragment : Fragment() {
      *  adapter 정의
      */
     private val reminderAdapter: RemindersAdapter by lazy {
-        RemindersAdapter()
+        RemindersAdapter(OnItemClickListener { reminder ->
+            Log.d(TAG, "onClick :: ${reminder.title}")
+            viewModel.setClickedReminder(reminder)
+        })
     }
 
 
@@ -87,11 +92,19 @@ class ReminderHomeFragment : Fragment() {
      * viewModel의 liveData observing
      */
     private fun observe() {
-        viewModel.navigateToDetail.observe(viewLifecycleOwner, Observer { toMove ->
-            Log.d(TAG, "observe: ${toMove}")
-            if (toMove) {
-                // moveToDetail
-                moveToDetailFragment()
+//        viewModel.toAddNewReminder.observe(viewLifecycleOwner, Observer { toMove ->
+//            Log.d(TAG, "observe: ${toMove}")
+//            if (toMove) {
+//                // moveToDetail
+//                moveToDetailFragment()
+//                viewModel.navigateToDetailDone()
+//            }
+//        })
+
+
+        viewModel.reminder.observe(viewLifecycleOwner, Observer { reminder ->
+            reminder?.let {
+                moveToDetailFragment(reminder)
                 viewModel.navigateToDetailDone()
             }
         })
@@ -101,10 +114,10 @@ class ReminderHomeFragment : Fragment() {
     /**
      *  ReminderDetailFragment destination으로 navigate
      */
-    private fun moveToDetailFragment() {
+    private fun moveToDetailFragment(reminder: ReminderEntity) {
         this.findNavController()
             .navigate(ReminderHomeFragmentDirections
-                .actionReminderHomeFragmentToReminderDetailFragment())
+                .actionReminderHomeFragmentToReminderDetailFragment(reminder))
     }
 
     companion object {
