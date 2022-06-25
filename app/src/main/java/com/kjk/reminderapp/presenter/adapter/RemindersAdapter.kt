@@ -2,6 +2,7 @@ package com.kjk.reminderapp.presenter.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.kjk.reminderapp.R
@@ -12,7 +13,9 @@ import com.kjk.reminderapp.databinding.ItemListReminderBinding
 /**
  *  ReminderHomeFragment에 적용할 Adapter
  */
-class RemindersAdapter: RecyclerView.Adapter<RemindersAdapter.RemindersViewHolder>(){
+class RemindersAdapter(
+    private val callBack: OnItemClickListener
+): RecyclerView.Adapter<RemindersAdapter.RemindersViewHolder>(){
 
 
     private var reminders: List<ReminderEntity> = emptyList()
@@ -24,7 +27,7 @@ class RemindersAdapter: RecyclerView.Adapter<RemindersAdapter.RemindersViewHolde
 
 
     override fun onBindViewHolder(holder: RemindersViewHolder, position: Int) {
-        holder.bind(reminders[position])
+        holder.bind(reminders[position], callBack)
     }
 
 
@@ -45,8 +48,9 @@ class RemindersAdapter: RecyclerView.Adapter<RemindersAdapter.RemindersViewHolde
     ): RecyclerView.ViewHolder(binding.root) {
 
 
-        fun bind(reminder: ReminderEntity) {
+        fun bind(reminder: ReminderEntity, callBack: OnItemClickListener) {
             binding.reminder = reminder
+            binding.callBack = callBack
             binding.executePendingBindings()
         }
 
@@ -64,4 +68,14 @@ class RemindersAdapter: RecyclerView.Adapter<RemindersAdapter.RemindersViewHolde
             }
         }
     }
+}
+
+
+/**
+ *  adatper item click listener
+ */
+class OnItemClickListener(
+    private val clickListener: ((reminder: ReminderEntity) -> Unit)
+) {
+    fun onItemClick(reminder: ReminderEntity) = clickListener(reminder)
 }

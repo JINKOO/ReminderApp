@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.kjk.reminderapp.presenter.reminderdetail.ReminderDetailViewModel" />
+    </data>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/reminder_title_label"
@@ -33,7 +35,8 @@
                 android:hint="@string/reminder_title_hint"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/reminder_title_label" />
+                app:layout_constraintTop_toBottomOf="@+id/reminder_title_label"
+                android:text="@={viewModel.reminderTitle}"/>
 
             <TextView
                 android:id="@+id/reminder_setting_time_label"
@@ -143,9 +146,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/select_ringbell_layout"
-                app:layout_constraintVertical_bias="1" />
-
+                app:layout_constraintVertical_bias="1"
+                android:onClick="@{() -> viewModel.addNewReminder()}"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
 </layout>

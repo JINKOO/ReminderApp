@@ -14,7 +14,7 @@ interface ReminderDatabaseDao {
      *  새로운 reminder를 추가하는 함수.
      */
     @Insert
-    fun insert(reminderEntity: ReminderEntity)
+    suspend fun insert(reminderEntity: ReminderEntity)
 
 
     /**
@@ -22,7 +22,7 @@ interface ReminderDatabaseDao {
      *  database table에 update
      */
     @Update
-    fun update(reminderEntity: ReminderEntity)
+    suspend fun update(reminderEntity: ReminderEntity)
 
 
     /**
@@ -30,7 +30,7 @@ interface ReminderDatabaseDao {
      *  특정 Reminder를 get하는 함수
      */
     @Query("SELECT * FROM reminder_table WHERE reminderId = :reminderId")
-    fun getReminder(reminderId: Long): ReminderEntity?
+    suspend fun getReminder(reminderId: Long): ReminderEntity?
 
 
     /**
