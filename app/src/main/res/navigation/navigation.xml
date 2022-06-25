@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/reminderHomeFragment">
+
+    <fragment
+        android:id="@+id/reminderHomeFragment"
+        android:name="com.kjk.reminderapp.presenter.reminderhome.ReminderHomeFragment"
+        android:label="ReminderHomeFragment"
+        tools:layout="@layout/fragment_reminder_home">
+        <action
+            android:id="@+id/action_reminderHomeFragment_to_reminderDetailFragment"
+            app:destination="@id/reminderDetailFragment"
+            app:popUpTo="@id/reminderHomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reminderDetailFragment"
+        android:name="com.kjk.reminderapp.presenter.reminderdetail.ReminderDetailFragment"
+        android:label="ReminderDetailFragment"
+        tools:layout="@layout/fragment_reminder_detail">
+        <action
+            android:id="@+id/action_reminderDetailFragment_to_reminderHomeFragment"
+            app:destination="@id/reminderHomeFragment" />
+    </fragment>
+</navigation>
