@@ -87,7 +87,8 @@
                 android:layout_marginEnd="@dimen/margin_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/reminder_ringbell_label">
+                app:layout_constraintTop_toBottomOf="@id/reminder_ringbell_label"
+                android:onClick="@{() -> viewModel.navigateToSelectRingtone()}">
 
                 <ImageView
                     android:id="@+id/ringbell_imageview"
@@ -110,6 +111,7 @@
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/ringbell_imageview"
                     app:layout_constraintTop_toTopOf="parent"
+                    android:text="@string/ringtone_label"
                     tools:text="Ringtone" />
 
                 <TextView
@@ -122,6 +124,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/ringbell_textview"
                     app:layout_constraintTop_toBottomOf="@id/ringbell_textview"
+                    android:text="@{viewModel.ringtoneTitle}"
                     tools:text="HomeComing" />
 
                 <ImageView

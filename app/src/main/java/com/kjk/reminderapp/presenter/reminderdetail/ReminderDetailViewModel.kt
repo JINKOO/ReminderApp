@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kjk.reminderapp.data.local.ReminderDatabase
 import com.kjk.reminderapp.data.local.ReminderDatabaseDao
 import com.kjk.reminderapp.data.local.ReminderEntity
 import kotlinx.coroutines.launch
@@ -46,11 +45,27 @@ class ReminderDetailViewModel(
 
 
     /**
+     *  ringtone Title
+     */
+    private val _ringtoneTitle = MutableLiveData<String>()
+    val ringtoneTitle: LiveData<String>
+        get() = _ringtoneTitle
+
+
+    /**
      *  navigate To HomeFragment
      */
     private val _navigateToHome = MutableLiveData<Boolean>()
     val navigateToHome: LiveData<Boolean>
         get() = _navigateToHome
+
+
+    /**
+     *  navigate to ringtone 선택 Activity
+     */
+    private val _navigateToSystemRingtone = MutableLiveData<Boolean>()
+    val navigateToSystemRingtone: LiveData<Boolean>
+        get() = _navigateToSystemRingtone
 
 
     init {
@@ -69,7 +84,7 @@ class ReminderDetailViewModel(
             val reminder = ReminderEntity(
                 title = reminderTitle.value!!,
                 settingTime = reminderSettingTime.value!!,
-                ringBellTitle = "HomeComing",
+                ringBellTitle = ringtoneTitle.value!!,
             )
             insert(reminder)
             _navigateToHome.value = true
@@ -80,6 +95,8 @@ class ReminderDetailViewModel(
     /**
      *  사용자가 TimePicker로 선택 한 시간을,
      *  long으로 변환한다.
+     *
+     *  TODO LocalTime으로 변경 할 것.
      */
     fun setRemindTime(hourOfDay: Int, minute: Int) {
         val cal = Calendar.getInstance()
@@ -88,6 +105,14 @@ class ReminderDetailViewModel(
         cal.set(Calendar.SECOND, 0)
         Log.d(TAG, "setRemindTime: ${cal.timeInMillis}")
         _reminderSettingTime.value = cal.timeInMillis
+    }
+
+
+    /**
+     *
+     */
+    fun setRingtoneTitle(ringtoneTitle: String) {
+        _ringtoneTitle.value = ringtoneTitle
     }
 
 
@@ -122,6 +147,22 @@ class ReminderDetailViewModel(
      */
     fun onSaveClickEventDone() {
        _navigateToHome.value = false
+    }
+
+
+    /**
+     *  system ringtone 화면으로 이동
+     */
+    fun navigateToSelectRingtone() {
+        _navigateToSystemRingtone.value = true
+    }
+
+
+    /**
+     *  system ringtone 화면으로 이동 완료.
+     */
+    fun navigateToSelectRingtoneDone() {
+        _navigateToSystemRingtone.value = false
     }
 
 

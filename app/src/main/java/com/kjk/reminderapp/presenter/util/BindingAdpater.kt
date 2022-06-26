@@ -6,7 +6,6 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kjk.reminderapp.data.local.ReminderEntity
 import com.kjk.reminderapp.presenter.adapter.RemindersAdapter
-import java.time.format.DateTimeFormatter
 
 /**
  *  recyclerView에 reminder리스트 set
@@ -34,7 +33,11 @@ fun setEmptyReminderTextView(textView: TextView, reminders: List<ReminderEntity>
 }
 
 
-const val TIME_FORAMT = "hh:mm a"
+/**
+ *  Long타입의 millisecond를
+ *  확장 함수를 이용해,
+ *  요구 사항의 시간 format으로 변경해 set하는 함수
+ */
 @BindingAdapter("timeFormat")
 fun setTimeFormat(textView: TextView, settingTime: Long?) {
     settingTime?.let {
