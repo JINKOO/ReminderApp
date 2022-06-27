@@ -1,18 +1,15 @@
 package com.kjk.reminderapp.presenter.reminderdetail
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -46,23 +43,23 @@ class ReminderDetailFragment : Fragment() {
     private lateinit var viewModel: ReminderDetailViewModel
 
 
-
     /**
      * 시스템 ringtone 선택 화면에서
      * 사용자가 선택한 ringtone result처리
      */
-    private val launcher: ActivityResultLauncher<Int> = registerForActivityResult(SelectRingtoneContract()) { result ->
-        result?.let {
-            Log.d(TAG, "${result}, ${RingtoneManager.getRingtone(requireActivity(),result).getTitle(activity)} ")
-            val ringtone = RingtoneManager.getRingtone(requireActivity(), result)
-            viewModel.setRingtoneTitle(ringtone.getTitle(activity))
+    private val launcher: ActivityResultLauncher<Int> =
+        registerForActivityResult(SelectRingtoneContract()) { result ->
+            result?.let {
+                Log.d(TAG, "${result}, ${RingtoneManager.getRingtone(requireActivity(), result).getTitle(activity)}")
 
-            // test ringtone 실행.
-            // TODO 나중에 지워야 하는 코드
-            ringtone.play()
+                val ringtone = RingtoneManager.getRingtone(requireActivity(), result)
+                viewModel.setRingtone(result.toString(), ringtone.getTitle(requireActivity()))
 
+                // test ringtone 실행.
+                // TODO 나중에 지워야 하는 코드
+                ringtone.play()
+            }
         }
-    }
 
 
     /**
@@ -85,20 +82,17 @@ class ReminderDetailFragment : Fragment() {
         val application = requireNotNull(activity).application
         val dataSource = ReminderDatabase.getInstance(application).reminderDatabaseDao
 
-        //safe-args
+        // safe-args
         val arguments = ReminderDetailFragmentArgs.fromBundle(requireArguments())
-        Log.d(TAG, "onCreateView: ${arguments.reminder.title}")
+        Log.d(TAG, "onCreateView: arguments : ${arguments.reminderId}")
 
         // init viewModel
-        viewModelFactory = ReminderViewModelFactory(dataSource, arguments.reminder)
+        viewModelFactory = ReminderViewModelFactory(dataSource, arguments.reminderId)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ReminderDetailViewModel::class.java)
 
         // init databinding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
-
-        //
-        initLayout()
 
         return binding.root
     }
@@ -106,6 +100,8 @@ class ReminderDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initLayout()
+        Log.d(TAG, "onViewCreated: ${viewModel.reminder.value}")
         observe()
     }
 
@@ -114,12 +110,12 @@ class ReminderDetailFragment : Fragment() {
      *  layout 초기화
      */
     private fun initLayout() {
+        if (viewModel.reminderSettingTaskType == ReminderSettingTaskType.CREATE) {
+            setDefaultRingTone()
+        }
+        setReminderTitle()
         setTimePicker()
-        val defaultRingtoneUri = Settings.System.DEFAULT_RINGTONE_URI
-        val ringtone = RingtoneManager.getRingtone(requireActivity(), defaultRingtoneUri)
-        viewModel.setRingtoneTitle(ringtone.getTitle(requireActivity()))
     }
-
 
     /**
      *  ViewModel의 LiveData Observe
@@ -132,7 +128,7 @@ class ReminderDetailFragment : Fragment() {
                 viewModel.onSaveClickEventDone()
             }
         })
-        
+
         viewModel.navigateToSystemRingtone.observe(viewLifecycleOwner, Observer { toMove ->
             if (toMove) {
                 moveToSystemRingtone()
@@ -147,8 +143,10 @@ class ReminderDetailFragment : Fragment() {
      */
     private fun moveToHomeFragment() {
         this.findNavController()
-            .navigate(ReminderDetailFragmentDirections
-                .actionReminderDetailFragmentToReminderHomeFragment())
+            .navigate(
+                ReminderDetailFragmentDirections
+                    .actionReminderDetailFragmentToReminderHomeFragment()
+            )
     }
 
 
@@ -162,7 +160,34 @@ class ReminderDetailFragment : Fragment() {
          * 이중의 하나를 intent로 전달할 때 사용한다.
          */
         launcher.launch(RingtoneManager.TYPE_ALL)
+    }
 
+
+    /**
+     *  reminder Title
+     */
+    private fun setReminderTitle() {
+        binding.reminderTitleEditText.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                    Log.d(TAG, "beforeTextChanged: ${s}")
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    Log.d(TAG, "onTextChanged: ${s}")
+                    viewModel.setReminderTitle(s.toString())
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    Log.d(TAG, "afterTextChanged: ${s.toString()}")
+                }
+            })
+        }
     }
 
 
@@ -170,13 +195,24 @@ class ReminderDetailFragment : Fragment() {
      *  setTimePickerDialog
      */
     private fun setTimePicker() {
-        binding.timePicker.apply { 
+        binding.timePicker.apply {
             setOnTimeChangedListener { view, hourOfDay, minute ->
                 Log.d(TAG, "setTimePicker: ${hourOfDay}, ${minute}")
                 // database에 저장하기위해, 지정한 알림 시간을 milliseconds로 변환.
-                viewModel.setRemindTime(hourOfDay, minute)
+                viewModel.setReminderTime(hourOfDay, minute)
             }
         }
+    }
+
+
+    /**
+     * default ringtone을 set한다.
+     */
+    private fun setDefaultRingTone() {
+        val defaultRingtoneUri = Settings.System.DEFAULT_RINGTONE_URI
+        val ringtone = RingtoneManager.getRingtone(requireActivity(), defaultRingtoneUri)
+        Log.d(TAG, "initLayout: CREATE ${ringtone.getTitle(requireActivity())}")
+        viewModel.setRingtone(defaultRingtoneUri.toString(), ringtone.getTitle(requireActivity()))
     }
 
 
