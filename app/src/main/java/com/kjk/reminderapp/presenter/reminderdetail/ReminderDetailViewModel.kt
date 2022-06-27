@@ -1,10 +1,7 @@
 package com.kjk.reminderapp.presenter.reminderdetail
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.kjk.reminderapp.data.local.ReminderDatabaseDao
 import com.kjk.reminderapp.data.local.ReminderEntity
 import kotlinx.coroutines.launch
@@ -12,28 +9,25 @@ import java.util.*
 
 class ReminderDetailViewModel(
     private val database: ReminderDatabaseDao,
-    reminder: ReminderEntity
+    private val reminderId: Long
 ) : ViewModel() {
 
 
     /**
-     *  추가 혹은 update할 reminder LiveData
+     *  reminderId로
+     *  database에서 특정 reminder를 가져온다.
      */
-    private val newReminder = MutableLiveData<ReminderEntity>()
+    val reminder: LiveData<ReminderEntity?> = database.getReminder(reminderId).also {
+        Log.d(TAG, "viewModel's ReminderEntity: ${reminderId}, ${it.value.toString()}")
+    }
 
 
     /**
-     *  수정을 위해 list에서 넘어온 reminder
+     *  reminder title
      */
-    private val _reminder = MutableLiveData<ReminderEntity>()
-    val reminder: LiveData<ReminderEntity>
-        get() = _reminder
-
-
-    /**
-     *  two - way binding을 위한, reminder title
-     */
-    val reminderTitle = MutableLiveData<String>()
+    private val _reminderTitle = MutableLiveData<String>()
+    val reminderTitle: LiveData<String>
+        get() = _reminderTitle
 
 
     /**
@@ -42,6 +36,14 @@ class ReminderDetailViewModel(
     private val _reminderSettingTime = MutableLiveData<Long>()
     val reminderSettingTime: LiveData<Long>
         get() = _reminderSettingTime
+
+
+    /**
+     *  ringtone Content 경로
+     */
+    private val _ringtonePath = MutableLiveData<String>()
+    val ringtonePath: LiveData<String>
+        get() = _ringtonePath
 
 
     /**
@@ -68,27 +70,105 @@ class ReminderDetailViewModel(
         get() = _navigateToSystemRingtone
 
 
+    /**
+     * 현재 reminder setting 작업이,
+     * CREATE인지,
+     * UPDATE인지
+     * 판별하는 LiveData
+     */
+    lateinit var reminderSettingTaskType: ReminderSettingTaskType
+
+
     init {
-        // 수정인 경우,
-        // 기존 layout에 setting한다.
-        _reminder.value = reminder
+        Log.d(TAG, "init: ")
+        setReminderSettingTaskType()
     }
 
 
     /**
-     *  새로운 Reminder를 추가한다.
+     *  현재 reminder를 setting하는 작업이,
+     *  CREATE인지
+     *  UPDATE인지
+     *  setting하는 함수,
      */
-    fun addNewReminder() {
-        viewModelScope.launch {
-            Log.d(TAG, "addNewReminder: ${reminderTitle.value}")
-            val reminder = ReminderEntity(
-                title = reminderTitle.value!!,
-                settingTime = reminderSettingTime.value!!,
-                ringBellTitle = ringtoneTitle.value!!,
-            )
-            insert(reminder)
-            _navigateToHome.value = true
+    private fun setReminderSettingTaskType() {
+        reminderSettingTaskType = if(reminderId == 0L) {
+            ReminderSettingTaskType.CREATE
+        } else {
+            ReminderSettingTaskType.UPDATE
         }
+    }
+
+
+    /**
+     *  Save 버튼 Click trigger 이벤트 함수,
+     *  수정인지, 새로 생성하는 것인지 분기해야한다.
+     */
+    fun onSaveReminder() {
+        Log.d(TAG, "onSaveReminder: ${reminderSettingTaskType}")
+        when (reminderSettingTaskType) {
+            ReminderSettingTaskType.CREATE -> {
+                createReminder()
+            }
+            ReminderSettingTaskType.UPDATE -> {
+                updateReminder()
+            }
+        }
+        _navigateToHome.value = true
+    }
+
+    /**
+     *  새로운 Reminder를 추가한다.
+     *  database의 insert작업이 필요하다
+     */
+    private fun createReminder() {
+        viewModelScope.launch {
+            Log.d(TAG, "createReminder: ${reminderTitle.value}")
+
+            val newReminder = ReminderEntity(
+                title = reminderTitle.value!!,
+                settingTime = reminderSettingTime.value ?: System.currentTimeMillis(),
+                ringTonePath = ringtonePath.value!!,
+                ringToneTitle = ringtoneTitle.value!!
+            )
+            insert(newReminder)
+        }
+    }
+
+
+    /**
+     *  reminder update하는 로직
+     *
+     */
+    private fun updateReminder() {
+        viewModelScope.launch {
+            val currentReminder = database.get(reminderId) ?: return@launch
+
+            Log.d(TAG, "updateReminder: ${currentReminder}")
+
+            /**
+             *  update Reminder
+             *  update인데 아무 내용을 건드리리 않으면,
+             *  기존의 값으로, update한다.
+             */
+            currentReminder.run {
+                title = reminderTitle.value ?: title
+                settingTime = reminderSettingTime.value ?: settingTime
+                ringTonePath = ringtonePath.value ?: ringTonePath
+                ringToneTitle = ringtoneTitle.value ?: ringToneTitle
+            }
+
+            // update
+            update(currentReminder)
+        }
+    }
+
+
+    /**
+     *  reminder title set
+     */
+    fun setReminderTitle(title: String) {
+        _reminderTitle.value = title
     }
 
 
@@ -98,7 +178,7 @@ class ReminderDetailViewModel(
      *
      *  TODO LocalTime으로 변경 할 것.
      */
-    fun setRemindTime(hourOfDay: Int, minute: Int) {
+    fun setReminderTime(hourOfDay: Int, minute: Int) {
         val cal = Calendar.getInstance()
         cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
         cal.set(Calendar.MINUTE, minute)
@@ -109,19 +189,12 @@ class ReminderDetailViewModel(
 
 
     /**
-     *
+     *  default혹은, 사용자가 선택한
+     *  ringtone content를 set한다.
      */
-    fun setRingtoneTitle(ringtoneTitle: String) {
-        _ringtoneTitle.value = ringtoneTitle
-    }
-
-
-    /**
-     *  save button이 클릭되면,
-     *  수정되거나, 새로 추가한 reminder가 dabase에 저장되어야 한다.
-     */
-    fun updateReminder() {
-
+    fun setRingtone(ringtonePath: String, ringToneTitle: String) {
+        _ringtonePath.value = ringtonePath
+        _ringtoneTitle.value = ringToneTitle
     }
 
 
@@ -133,8 +206,10 @@ class ReminderDetailViewModel(
     }
 
 
+
     /**
-     *  database update reminder
+     *  save button이 클릭되면,
+     *  수정되거나, 새로 추가한 reminder가 dabase에 저장되어야 한다.
      */
     private suspend fun update(reminder: ReminderEntity) {
         database.update(reminder)
@@ -173,9 +248,9 @@ class ReminderDetailViewModel(
 
 
 /**
- *  수정 작업 인지, 새로 생성하는 작업인지
+ *  수정 작업인지, 새로 생성하는 작업인지
  */
-enum class ReminderTask{
+enum class ReminderSettingTaskType {
     CREATE,
     UPDATE
 }

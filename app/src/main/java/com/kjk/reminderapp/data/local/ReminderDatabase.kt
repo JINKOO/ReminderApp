@@ -3,7 +3,7 @@ package com.kjk.reminderapp.data.local
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [ReminderEntity::class], version = 1)
+@Database(entities = [ReminderEntity::class], version = 5)
 //@TypeConverters(Converter::class)
 abstract class ReminderDatabase : RoomDatabase() {
 
@@ -22,7 +22,9 @@ abstract class ReminderDatabase : RoomDatabase() {
                         context,
                         ReminderDatabase::class.java,
                         "reminder_database"
-                    ).build()
+                    )
+                        .fallbackToDestructiveMigration()
+                        .build()
                     INSTANCE = instance
                 }
                 return instance

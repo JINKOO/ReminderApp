@@ -9,9 +9,10 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "reminder_table")
 data class ReminderEntity(
     @PrimaryKey(autoGenerate = true)
-    val reminderId: Long = 0L,
-    val title: String,
-    val settingTime: Long,
-    val ringBellTitle: String,
-    val isActivate: Boolean = false
+    var reminderId: Long = 0L,
+    var title: String,
+    var settingTime: Long,
+    var ringTonePath: String,
+    var ringToneTitle: String,
+    var isActivate: Boolean = false
 ) : Parcelable

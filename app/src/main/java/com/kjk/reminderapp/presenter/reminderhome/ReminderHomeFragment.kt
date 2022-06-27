@@ -64,16 +64,18 @@ class ReminderHomeFragment : Fragment() {
             false
         )
 
-
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initLayout()
 
         // observe
         observe()
-
-        return binding.root
     }
 
 
@@ -88,37 +90,42 @@ class ReminderHomeFragment : Fragment() {
     }
 
 
+
     /**
      * viewModel의 liveData observing
      */
     private fun observe() {
-//        viewModel.toAddNewReminder.observe(viewLifecycleOwner, Observer { toMove ->
-//            Log.d(TAG, "observe: ${toMove}")
-//            if (toMove) {
-//                // moveToDetail
-//                moveToDetailFragment()
-//                viewModel.navigateToDetailDone()
-//            }
-//        })
+        viewModel.toAddNewReminder.observe(viewLifecycleOwner, Observer { toMove ->
+            Log.d(TAG, "observe: ${toMove}")
+            if (toMove) {
+                moveToDetailFragment()
+                viewModel.navigateToDetailDone()
+            }
+        })
 
 
         viewModel.reminder.observe(viewLifecycleOwner, Observer { reminder ->
             reminder?.let {
-                moveToDetailFragment(reminder)
+                moveToDetailFragment(reminder.reminderId)
                 viewModel.navigateToDetailDone()
             }
         })
     }
 
 
+
     /**
      *  ReminderDetailFragment destination으로 navigate
      */
-    private fun moveToDetailFragment(reminder: ReminderEntity) {
+    private fun moveToDetailFragment(reminderId: Long = 0L) {
         this.findNavController()
             .navigate(ReminderHomeFragmentDirections
-                .actionReminderHomeFragmentToReminderDetailFragment(reminder))
+                .actionReminderHomeFragmentToReminderDetailFragment().apply {
+                    // default value가 아닌 경우,
+                    setReminderId(reminderId)
+                })
     }
+
 
     companion object {
         private const val TAG = "HomeFragment"

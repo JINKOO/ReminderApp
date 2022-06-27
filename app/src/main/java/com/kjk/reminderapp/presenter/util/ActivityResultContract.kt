@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContract
 
 /**
  *  reminder의 ringtone 지정을 위해 android 시스템이 제공하는 기본 벨소리 화면으로
- *  이동 및선택 값 가져오는 Contract
+ *  이동 및 선택 값 가져오는 Contract
  *
  *  Detail Fragement -> Ringtone system Activity -> DetailFragment(with, 사용자가 선택한 ringtone Uri)
  */

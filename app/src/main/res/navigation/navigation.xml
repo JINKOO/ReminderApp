@@ -23,8 +23,14 @@
         <action
             android:id="@+id/action_reminderDetailFragment_to_reminderHomeFragment"
             app:destination="@id/reminderHomeFragment" />
+
         <argument
-            android:name="reminder"
-            app:argType="com.kjk.reminderapp.data.local.ReminderEntity" />
+            android:name="reminderId"
+            app:argType="long"
+            android:defaultValue="0L" />
+<!--        <argument-->
+<!--            android:name="reminder"-->
+<!--            app:argType="com.kjk.reminderapp.data.local.ReminderEntity"-->
+<!--            app:nullable="true" />-->
     </fragment>
 </navigation>

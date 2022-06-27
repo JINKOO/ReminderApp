@@ -8,12 +8,12 @@ import com.kjk.reminderapp.data.local.ReminderEntity
 
 class ReminderViewModelFactory(
     private val database: ReminderDatabaseDao,
-    private val reminder: ReminderEntity
+    private val reminderId: Long
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ReminderDetailViewModel::class.java)) {
-            return ReminderDetailViewModel(database, reminder) as T
+            return ReminderDetailViewModel(database, reminderId) as T
         }
 
         throw IllegalArgumentException("Unknown viewModel class")
