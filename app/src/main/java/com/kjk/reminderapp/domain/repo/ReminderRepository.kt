@@ -1,8 +1,8 @@
 package com.kjk.reminderapp.domain.repo
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.kjk.reminderapp.data.local.ReminderDatabase
-import com.kjk.reminderapp.data.local.ReminderEntity
+import com.kjk.reminderapp.data.mapper.toDomainListModel
 
 /**
  *  Repository
@@ -15,5 +15,7 @@ class ReminderRepository(
     /**
      *   database에 저장된 모든 reminder data를 fetch
      */
-    val reminders: LiveData<List<ReminderEntity>> = database.reminderDatabaseDao.getAllReminders()
+    val reminders = Transformations.map(database.reminderDatabaseDao.getAllReminders()) {
+        it.toDomainListModel()
+    }
 }

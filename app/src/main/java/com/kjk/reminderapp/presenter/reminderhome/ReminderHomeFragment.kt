@@ -12,10 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kjk.reminderapp.R
-import com.kjk.reminderapp.data.local.ReminderEntity
 import com.kjk.reminderapp.databinding.FragmentReminderHomeBinding
+import com.kjk.reminderapp.presenter.adapter.OnItemCheckBoxListener
 import com.kjk.reminderapp.presenter.adapter.OnItemClickListener
 import com.kjk.reminderapp.presenter.adapter.RemindersAdapter
+import com.kjk.reminderapp.presenter.reminderalarm.AlarmFunctions
 
 /**
  *  reminder list를 보여주는
@@ -38,12 +39,40 @@ class ReminderHomeFragment : Fragment() {
 
 
     /**
+     *  Alarm functions
+     */
+    private val alarmFunction by lazy {
+        AlarmFunctions(requireActivity())
+    }
+
+    /**
      *  adapter 정의
      */
     private val reminderAdapter: RemindersAdapter by lazy {
         RemindersAdapter(OnItemClickListener { reminder ->
             Log.d(TAG, "onClick :: ${reminder.title}")
             viewModel.setClickedReminder(reminder)
+        }, OnItemCheckBoxListener { isChecked, reminder ->
+
+            // check box 상태 업데이트
+            reminder.isActivate = isChecked
+            Log.d(TAG, "onCLick::: ${isChecked}, ${reminder.isActivate} ")
+
+            // alarm 설정
+            if (isChecked) {
+                // alarm을 설정한다.
+                Log.d(TAG, "${reminder.title} 알람이 설정되었습니다.")
+
+                // viewModel로 옮길 것.
+                alarmFunction.callAlarm(
+                    reminder
+                )
+            } else {
+                // 알람 해제한다.
+                Log.d(TAG, "알람이 해제 되었습니다.")
+                alarmFunction.cancelAlarm(reminder.id.toInt())
+            }
+
         })
     }
 
@@ -90,7 +119,6 @@ class ReminderHomeFragment : Fragment() {
     }
 
 
-
     /**
      * viewModel의 liveData observing
      */
@@ -105,13 +133,14 @@ class ReminderHomeFragment : Fragment() {
 
 
         viewModel.reminder.observe(viewLifecycleOwner, Observer { reminder ->
+            Log.d(TAG, "observe: ")
             reminder?.let {
-                moveToDetailFragment(reminder.reminderId)
+                Log.d(TAG, "observe: ${reminder}")
+                moveToDetailFragment(reminder.id)
                 viewModel.navigateToDetailDone()
             }
         })
     }
-
 
 
     /**
@@ -130,4 +159,5 @@ class ReminderHomeFragment : Fragment() {
     companion object {
         private const val TAG = "HomeFragment"
     }
+
 }

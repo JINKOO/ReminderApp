@@ -8,4 +8,5 @@
     <string name="reminder_title_hint">Please enter a name</string>
     <string name="empty_reminder_list_text">등록된 리마인더가 없습니다.</string>
     <string name="ringtone_label">Ringtone</string>
+    <string name="dismiss_label">Dismiss</string>
 </resources>

@@ -54,10 +54,6 @@ class ReminderDetailFragment : Fragment() {
 
                 val ringtone = RingtoneManager.getRingtone(requireActivity(), result)
                 viewModel.setRingtone(result.toString(), ringtone.getTitle(requireActivity()))
-
-                // test ringtone 실행.
-                // TODO 나중에 지워야 하는 코드
-                ringtone.play()
             }
         }
 

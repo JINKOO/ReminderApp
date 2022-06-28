@@ -2,6 +2,7 @@ package com.kjk.reminderapp.presenter.util
 
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -19,6 +20,14 @@ fun Long.toLocalDateTime(): LocalDateTime {
         Instant.ofEpochMilli(this),
         TimeZone.getDefault().toZoneId()
     )
+}
+
+
+/**
+ *  LocalDateTime -> Long
+ */
+fun LocalDateTime.toMilliSeconds(): Long {
+    return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
 

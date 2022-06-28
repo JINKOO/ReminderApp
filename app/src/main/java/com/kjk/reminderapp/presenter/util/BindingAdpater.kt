@@ -2,19 +2,21 @@ package com.kjk.reminderapp.presenter.util
 
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.TimePicker
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.kjk.reminderapp.data.local.ReminderEntity
+import com.kjk.reminderapp.domain.vo.ReminderVO
 import com.kjk.reminderapp.presenter.adapter.RemindersAdapter
 
 /**
  *  recyclerView에 reminder리스트 set
  */
 @BindingAdapter("reminderList")
-fun setReminderList(recyclerView: RecyclerView, reminders: List<ReminderEntity>?) {
+fun setReminderList(recyclerView: RecyclerView, reminders: List<ReminderVO>?) {
     val adapter = recyclerView.adapter as RemindersAdapter
     reminders?.let {
         adapter.updateAll(reminders)
@@ -27,7 +29,7 @@ fun setReminderList(recyclerView: RecyclerView, reminders: List<ReminderEntity>?
  *  리마인더가 없다는 문구 표시
  */
 @BindingAdapter("emptyReminderText")
-fun setEmptyReminderTextView(textView: TextView, reminders: List<ReminderEntity>?) {
+fun setEmptyReminderTextView(textView: TextView, reminders: List<ReminderVO>?) {
     textView.visibility = if (reminders.isNullOrEmpty()) {
         View.VISIBLE
     } else {
@@ -110,6 +112,15 @@ fun setRingtoneTitleFromEntity(textView: TextView, reminderEntity: ReminderEntit
     reminderEntity?.let {
         Log.d(TAG, "setRingtoneTitleFromEntity: ${reminderEntity}")
         textView.text = reminderEntity.ringToneTitle
+    }
+}
+
+@BindingAdapter("checkBox")
+fun setCheckBox(checkBox: CheckBox, reminderEntity: ReminderEntity?) {
+    reminderEntity?.let {
+        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            Log.d(TAG, "setCheckBox: ${isChecked}")
+        }
     }
 }
 

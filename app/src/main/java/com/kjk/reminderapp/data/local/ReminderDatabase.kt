@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.*
 
 @Database(entities = [ReminderEntity::class], version = 5)
-//@TypeConverters(Converter::class)
 abstract class ReminderDatabase : RoomDatabase() {
 
     abstract val reminderDatabaseDao: ReminderDatabaseDao
