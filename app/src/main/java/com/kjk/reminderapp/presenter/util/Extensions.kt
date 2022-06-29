@@ -24,9 +24,20 @@ fun Long.toLocalDateTime(): LocalDateTime {
 
 
 /**
- *  LocalDateTime -> Long
+ *  timepicke에서 선택한 hourOfDay, minute을
+ *  LocalDateTime변환 후,
+ *  다시 Long 타입으로 변환
  */
 fun LocalDateTime.toMilliSeconds(): Long {
+//    val now = LocalDateTime.now()
+//    val localDateTime = LocalDateTime.of(
+//        now.year,
+//        now.monthValue,
+//        now.dayOfMonth,
+//        hourOfDay,
+//        minute,
+//        0
+//    )
     return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 

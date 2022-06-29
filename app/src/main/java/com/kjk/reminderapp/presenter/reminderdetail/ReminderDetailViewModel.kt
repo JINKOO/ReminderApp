@@ -2,9 +2,11 @@ package com.kjk.reminderapp.presenter.reminderdetail
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.kjk.reminderapp.data.local.ReminderDatabase
 import com.kjk.reminderapp.data.local.ReminderDatabaseDao
 import com.kjk.reminderapp.data.local.ReminderEntity
 import com.kjk.reminderapp.data.mapper.toDatabaseModel
+import com.kjk.reminderapp.domain.repo.ReminderRepository
 import com.kjk.reminderapp.domain.vo.ReminderVO
 import com.kjk.reminderapp.presenter.util.toMilliSeconds
 import kotlinx.coroutines.launch
@@ -12,16 +14,18 @@ import java.time.LocalDateTime
 import java.util.*
 
 class ReminderDetailViewModel(
-    private val database: ReminderDatabaseDao,
+    private val database: ReminderDatabase,
     private val reminderId: Long
 ) : ViewModel() {
 
+
+    private val repository = ReminderRepository(database)
 
     /**
      *  reminderId로
      *  database에서 특정 reminder를 가져온다.
      */
-    val reminder: LiveData<ReminderEntity?> = database.getReminder(reminderId).also {
+    val reminder: LiveData<ReminderVO?> = repository.getReminder(reminderId).also {
         Log.d(TAG, "viewModel's ReminderEntity: ${reminderId}, ${it.value.toString()}")
     }
 
@@ -146,7 +150,7 @@ class ReminderDetailViewModel(
      */
     private fun updateReminder() {
         viewModelScope.launch {
-            val currentReminder: ReminderEntity = database.get(reminderId) ?: return@launch
+            val currentReminder = repository.get(reminderId) ?: return@launch
 
             Log.d(TAG, "updateReminder: ${currentReminder}")
 
@@ -156,6 +160,7 @@ class ReminderDetailViewModel(
              *  기존의 값으로, update한다.
              */
             currentReminder.run {
+                //id = reminderId
                 title = reminderTitle.value ?: title
                 settingTime = reminderSettingTime.value ?: settingTime
                 ringTonePath = ringtonePath.value ?: ringTonePath
@@ -182,8 +187,13 @@ class ReminderDetailViewModel(
      */
     fun setReminderTime(hourOfDay: Int, minute: Int) {
         val now = LocalDateTime.now()
-        val localDateTime = LocalDateTime.of(now.year, now.monthValue, now.dayOfMonth, hourOfDay, minute, 0)
-//        Log.d(TAG, "setRemindTime: ${localDateTime.toMilliSeconds()}")
+        val localDateTime = LocalDateTime.of(
+            now.year,
+            now.monthValue,
+            now.dayOfMonth,
+            hourOfDay, minute,
+            0
+        )
         _reminderSettingTime.value = localDateTime.toMilliSeconds()
     }
 
@@ -202,7 +212,7 @@ class ReminderDetailViewModel(
      * database insert
      */
     private suspend fun insert(reminder: ReminderVO) {
-        database.insert(reminder.toDatabaseModel())
+        repository.insertReminder(reminder)
     }
 
 
@@ -211,8 +221,8 @@ class ReminderDetailViewModel(
      *  save button이 클릭되면,
      *  수정되거나, 새로 추가한 reminder가 dabase에 저장되어야 한다.
      */
-    private suspend fun update(reminder: ReminderEntity) {
-        database.update(reminder)
+    private suspend fun update(reminder: ReminderVO) {
+        repository.updateReminder(reminder)
     }
 
 

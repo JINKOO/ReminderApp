@@ -18,6 +18,7 @@ class ReminderAlarmActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_reminder_alarm)
 
         /**
+         *
          *  service 로 부터 전달 받은 reminder
          */
         val reminder = intent.getParcelableExtra<ReminderVO>("reminder")!!
@@ -47,5 +48,6 @@ class ReminderAlarmActivity : AppCompatActivity() {
      */
     private fun moveToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
     }
 }

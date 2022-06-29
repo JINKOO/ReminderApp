@@ -49,31 +49,35 @@ class ReminderHomeFragment : Fragment() {
      *  adapter 정의
      */
     private val reminderAdapter: RemindersAdapter by lazy {
-        RemindersAdapter(OnItemClickListener { reminder ->
-            Log.d(TAG, "onClick :: ${reminder.title}")
-            viewModel.setClickedReminder(reminder)
-        }, OnItemCheckBoxListener { isChecked, reminder ->
+        RemindersAdapter(
+            OnItemClickListener { reminder ->
+                Log.d(TAG, "onClick :: ${reminder.title}")
+                viewModel.setClickedReminder(reminder)
+            },
+            OnItemCheckBoxListener { isChecked, reminder ->
 
-            // check box 상태 업데이트
-            reminder.isActivate = isChecked
-            Log.d(TAG, "onCLick::: ${isChecked}, ${reminder.isActivate} ")
+                // check box 상태 업데이트
+                reminder.isActivate = isChecked
+                Log.d(TAG, "onCLick:: ${isChecked}, ${reminder.isActivate} ")
 
-            // alarm 설정
-            if (isChecked) {
-                // alarm을 설정한다.
-                Log.d(TAG, "${reminder.title} 알람이 설정되었습니다.")
+                // alarm 설정
+                if (isChecked) {
+                    // alarm을 설정한다.
+                    Log.d(TAG, "${reminder.title} 알람이 설정되었습니다.")
 
-                // viewModel로 옮길 것.
-                alarmFunction.callAlarm(
-                    reminder
-                )
-            } else {
-                // 알람 해제한다.
-                Log.d(TAG, "알람이 해제 되었습니다.")
-                alarmFunction.cancelAlarm(reminder.id.toInt())
-            }
+                    // viewModel로 옮길 것.
+                    alarmFunction.callAlarm(
+                        reminder
+                    )
+                } else {
+                    // 알람 해제한다.
+                    Log.d(TAG, "알람이 해제 되었습니다.")
+                    alarmFunction.cancelAlarm(reminder.id.toInt())
+                }
 
-        })
+                // checkBox에 따른 알람 설정 값으로, update를 수행해야 한다.
+                viewModel.update(reminder)
+            })
     }
 
 

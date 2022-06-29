@@ -1,5 +1,6 @@
 package com.kjk.reminderapp.presenter.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -14,7 +15,7 @@ import com.kjk.reminderapp.domain.vo.ReminderVO
  */
 class RemindersAdapter(
     private val itemCallBack: OnItemClickListener,
-    private val checkBoxCallBack: OnItemCheckBoxListener
+    private val checkCallBack: OnItemCheckBoxListener
 ) : RecyclerView.Adapter<RemindersAdapter.RemindersViewHolder>() {
 
 
@@ -27,7 +28,7 @@ class RemindersAdapter(
 
 
     override fun onBindViewHolder(holder: RemindersViewHolder, position: Int) {
-        holder.bind(reminders[position], itemCallBack, checkBoxCallBack)
+        holder.bind(reminders[position], itemCallBack, checkCallBack)
     }
 
 
@@ -48,11 +49,13 @@ class RemindersAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
 
-        fun bind(reminder: ReminderVO, callBack: OnItemClickListener, checkBoxCallBack: OnItemCheckBoxListener) {
+        fun bind(reminder: ReminderVO, callBack: OnItemClickListener, checkCallBack: OnItemCheckBoxListener) {
             binding.reminder = reminder
             binding.callBack = callBack
-            binding.checkCallBack = checkBoxCallBack
+            binding.checkCallBack = checkCallBack
             binding.executePendingBindings()
+
+            Log.d(TAG, "bind: ${reminder.isActivate}")
 
             // fragment에서 click event를 handle한다.
             binding.reminderCheckBox.setOnCheckedChangeListener { buttonView, isChecked ->

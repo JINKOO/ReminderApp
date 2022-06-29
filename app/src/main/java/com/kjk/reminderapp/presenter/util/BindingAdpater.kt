@@ -8,7 +8,6 @@ import android.widget.TextView
 import android.widget.TimePicker
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.kjk.reminderapp.data.local.ReminderEntity
 import com.kjk.reminderapp.domain.vo.ReminderVO
 import com.kjk.reminderapp.presenter.adapter.RemindersAdapter
 
@@ -55,12 +54,12 @@ fun setTimeFormat(textView: TextView, settingTime: Long?) {
  *  Reminder Title을 set하는 부분
  */
 @BindingAdapter("editTextValue")
-fun setReminderTitle(editText: EditText, reminderEntity: ReminderEntity?) {
+fun setReminderTitle(editText: EditText, reminder: ReminderVO?) {
     Log.d(TAG, "setReminderTitle: ")
-    reminderEntity?.let {
-        Log.d(TAG, "setReminderTitle: ${reminderEntity}")
+    reminder?.let {
+        Log.d(TAG, "setReminderTitle: ${reminder}")
         editText.run {
-            setText(reminderEntity.title)
+            setText(reminder.title)
         }
     }
 }
@@ -72,12 +71,12 @@ fun setReminderTitle(editText: EditText, reminderEntity: ReminderEntity?) {
  *  UPDATE인 경우에는 기존에 저장되어 있던 시간으로 보여주어야 한다.
  */
 @BindingAdapter("timePickerValue")
-fun setTimePicker(timePicker: TimePicker, reminderEntity: ReminderEntity?) {
+fun setTimePicker(timePicker: TimePicker, reminder: ReminderVO?) {
     Log.d(TAG, "setTimePicker: ")
-    reminderEntity?.let {
-        Log.d(TAG, "setTimePicker: ${reminderEntity.settingTime}")
+    reminder?.let {
+        Log.d(TAG, "setTimePicker: ${reminder.settingTime}")
         timePicker.apply {
-            val localDateTime = reminderEntity.settingTime.toLocalDateTime()
+            val localDateTime = reminder.settingTime.toLocalDateTime()
             hour = localDateTime.hour
             minute = localDateTime.minute
         }
@@ -108,19 +107,22 @@ fun setRingtoneTitleFromUser(textView: TextView, ringtoneTitle: String?) {
  * 즉, 이는 Update가 아닌, Create 상태 라는 의미이다.
  */
 @BindingAdapter("reminderValue")
-fun setRingtoneTitleFromEntity(textView: TextView, reminderEntity: ReminderEntity?) {
-    reminderEntity?.let {
-        Log.d(TAG, "setRingtoneTitleFromEntity: ${reminderEntity}")
-        textView.text = reminderEntity.ringToneTitle
+fun setRingtoneTitleFromEntity(textView: TextView, reminder: ReminderVO?) {
+    reminder?.let {
+        Log.d(TAG, "setRingtoneTitleFromEntity: ${reminder}")
+        textView.text = reminder.ringToneTitle
     }
 }
 
+
+/**
+ *  home화면에서 reminder리스트를 fectch할 때,
+ *  alarm 설정되어 있는 것은 check한다.
+ */
 @BindingAdapter("checkBox")
-fun setCheckBox(checkBox: CheckBox, reminderEntity: ReminderEntity?) {
-    reminderEntity?.let {
-        checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            Log.d(TAG, "setCheckBox: ${isChecked}")
-        }
+fun setCheckBox(checkBox: CheckBox, reminder: ReminderVO?) {
+    reminder?.let {
+        checkBox.isChecked = reminder.isActivate
     }
 }
 

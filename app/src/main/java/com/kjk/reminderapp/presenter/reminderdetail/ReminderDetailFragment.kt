@@ -76,7 +76,7 @@ class ReminderDetailFragment : Fragment() {
 
         // init viewModel
         val application = requireNotNull(activity).application
-        val dataSource = ReminderDatabase.getInstance(application).reminderDatabaseDao
+        val dataSource = ReminderDatabase.getInstance(application)
 
         // safe-args
         val arguments = ReminderDetailFragmentArgs.fromBundle(requireArguments())

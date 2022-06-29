@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
  */
 @Parcelize
 data class ReminderVO(
-    var id: Long,
+    val id: Long,
     var title: String,
     var settingTime: Long,
     var ringTonePath: String,

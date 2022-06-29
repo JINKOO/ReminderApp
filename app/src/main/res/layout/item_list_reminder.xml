@@ -19,14 +19,14 @@
         <variable
             name="checkCallBack"
             type="com.kjk.reminderapp.presenter.adapter.OnItemCheckBoxListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="@{() -> callBack.onItemClick(reminder)}"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:background="@color/purple_500">
+        android:layout_marginBottom="@dimen/margin_large" >
 
         <ImageView
             android:id="@+id/reminder_imageview"
@@ -74,6 +74,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="@dimen/margin_default"
+            app:checkBox="@{reminder}"
             android:onClick="@{() -> checkCallBack.onItemCheckBoxClicked(isChecked, reminder)}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
