@@ -54,10 +54,6 @@ class ReminderDetailFragment : Fragment() {
 
                 val ringtone = RingtoneManager.getRingtone(requireActivity(), result)
                 viewModel.setRingtone(result.toString(), ringtone.getTitle(requireActivity()))
-
-                // test ringtone 실행.
-                // TODO 나중에 지워야 하는 코드
-                ringtone.play()
             }
         }
 
@@ -80,7 +76,7 @@ class ReminderDetailFragment : Fragment() {
 
         // init viewModel
         val application = requireNotNull(activity).application
-        val dataSource = ReminderDatabase.getInstance(application).reminderDatabaseDao
+        val dataSource = ReminderDatabase.getInstance(application)
 
         // safe-args
         val arguments = ReminderDetailFragmentArgs.fromBundle(requireArguments())

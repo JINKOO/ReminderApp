@@ -5,18 +5,28 @@
 
     <data>
         <variable
+            name="isChecked"
+            type="boolean" />
+
+        <variable
             name="reminder"
-            type="com.kjk.reminderapp.data.local.ReminderEntity" />
+            type="com.kjk.reminderapp.domain.vo.ReminderVO" />
 
         <variable
             name="callBack"
             type="com.kjk.reminderapp.presenter.adapter.OnItemClickListener" />
+
+        <variable
+            name="checkCallBack"
+            type="com.kjk.reminderapp.presenter.adapter.OnItemCheckBoxListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="@{() -> callBack.onItemClick(reminder)}">
+        android:onClick="@{() -> callBack.onItemClick(reminder)}"
+        android:layout_marginBottom="@dimen/margin_large" >
 
         <ImageView
             android:id="@+id/reminder_imageview"
@@ -47,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="내시경 약먹기"
-            android:text="@{reminder.title + reminder.reminderId}"
+            android:text="@{reminder.title + reminder.Id}"
             android:textStyle="bold"
             android:textSize="@dimen/text_size_default"
             app:layout_constraintStart_toStartOf="@id/setting_time_textview"
@@ -57,12 +67,15 @@
             android:layout_marginBottom="@dimen/margin_default"/>
 
         <CheckBox
+            android:id="@+id/reminder_checkBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="@dimen/margin_default"/>
+            android:layout_marginEnd="@dimen/margin_default"
+            app:checkBox="@{reminder}"
+            android:onClick="@{() -> checkCallBack.onItemCheckBoxClicked(isChecked, reminder)}"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

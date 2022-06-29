@@ -2,13 +2,15 @@ package com.kjk.reminderapp.presenter.reminderhome
 
 import android.app.Application
 import android.util.Log
+import android.widget.CheckBox
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kjk.reminderapp.data.local.ReminderDatabase
-import com.kjk.reminderapp.data.local.ReminderEntity
 import com.kjk.reminderapp.domain.repo.ReminderRepository
+import com.kjk.reminderapp.domain.vo.ReminderVO
+import kotlinx.coroutines.launch
 
 class ReminderHomeViewModel(
     application: Application
@@ -25,15 +27,15 @@ class ReminderHomeViewModel(
     /**
      *  repository로 부터 가져온 reminders
      */
-    val reminders: LiveData<List<ReminderEntity>> = reminderRepository.reminders
+    val reminders: LiveData<List<ReminderVO>> = reminderRepository.getReminders()
 
 
     /**
      *  리스트에서 item선택 시.
      *  detail fragment로 넘길 reminder
      */
-    private val _reminder = MutableLiveData<ReminderEntity?>()
-    val reminder: LiveData<ReminderEntity?>
+    private val _reminder = MutableLiveData<ReminderVO?>()
+    val reminder: LiveData<ReminderVO?>
         get() = _reminder
 
 
@@ -47,9 +49,7 @@ class ReminderHomeViewModel(
 
 
     /**
-     * add layout click 한 경우
-     * 새로운 Reminder 객체를 생성하고,
-     * database에 insert 해야 한다. 그리고, 이동
+     * detail fragment로 이동,
      */
     fun onAddNewReminderClick() {
         _toAddNewReminder.value = true
@@ -59,8 +59,8 @@ class ReminderHomeViewModel(
     /**
      *  item에서 선택한 reminder
      */
-    fun setClickedReminder(reminderEntity: ReminderEntity) {
-        _reminder.value = reminderEntity
+    fun setClickedReminder(reminder: ReminderVO) {
+        _reminder.value = reminder
     }
 
 
@@ -70,6 +70,35 @@ class ReminderHomeViewModel(
     fun navigateToDetailDone() {
         _toAddNewReminder.value = false
         _reminder.value = null
+    }
+
+
+    /**
+     *  alarm checkBox상태에 따른 update
+     */
+    fun update(reminder: ReminderVO) {
+        viewModelScope.launch {
+            updateReminder(reminder)
+        }
+    }
+
+
+    /**
+     *   repository를 통해,
+     *   알람 상태에 따른 update수행.
+     */
+    private suspend fun updateReminder(reminder: ReminderVO) {
+        reminderRepository.updateReminder(reminder)
+    }
+
+
+    fun checkBoxClicked(reminder: ReminderVO, isChecked: Boolean) {
+        viewModelScope.launch {
+            Log.d(TAG, "checkBoxClicked: ${isChecked}")
+            reminder.isActivate = isChecked
+            Log.d(TAG, "checkBoxClicked: ${reminder.isActivate}")
+            update(reminder)
+        }
     }
 
 
