@@ -14,6 +14,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/indigo"
+            android:elevation="4dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/add_reminder_linearlayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <TextView
+                android:id="@+id/toolbar_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_title_size"
+                android:textStyle="bold"
+                android:text="@string/toolbar_title_home"
+                tools:text="리마인드" />
+        </androidx.appcompat.widget.Toolbar>
+
+
         <LinearLayout
             android:id="@+id/add_reminder_linearlayout"
             android:layout_width="match_parent"
@@ -22,16 +48,18 @@
             android:onClick="@{() -> viewModel.onAddNewReminderClick()}"
             android:orientation="horizontal"
             android:padding="@dimen/padding_default"
+            android:background="@drawable/layout_reminder"
             app:layout_constraintBottom_toTopOf="@id/reminder_recyclerview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <ImageView
                 android:id="@+id/add_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:shadowColor="@color/white"
                 android:src="@drawable/ic_baseline_add_24" />
 
             <TextView
@@ -41,6 +69,7 @@
                 android:layout_marginStart="@dimen/margin_default"
                 android:gravity="center"
                 android:text="@string/add_reminder_label"
+                android:textColor="@color/white"
                 android:textSize="24dp"
                 android:textStyle="bold"
                 tools:text="리마인더 추가" />
@@ -63,6 +92,7 @@
             android:layout_height="wrap_content"
             android:text="@string/empty_reminder_list_text"
             android:textSize="@dimen/text_size_default"
+            android:textColor="@color/white"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

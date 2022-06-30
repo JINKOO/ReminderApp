@@ -14,6 +14,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/indigo"
+            android:elevation="4dp"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toTopOf="@+id/reminder_title_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <TextView
+                android:id="@+id/toolbar_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_title_size"
+                android:textStyle="bold"
+                android:text="@string/toolbar_title_detail"
+                tools:text="리마인드 설정" />
+        </androidx.appcompat.widget.Toolbar>
+
+
         <TextView
             android:id="@+id/reminder_title_label"
             android:layout_width="wrap_content"
@@ -22,9 +48,10 @@
             android:text="@string/reminder_title_label"
             android:textSize="@dimen/text_size_default"
             android:textStyle="bold"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@+id/reminder_title_editText"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <EditText
             android:id="@+id/reminder_title_editText"
@@ -47,6 +74,7 @@
             android:layout_marginTop="@dimen/margin_large"
             android:text="@string/setting_time_label"
             android:textSize="@dimen/text_size_default"
+            android:textColor="@color/white"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/time_picker"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,6 +102,7 @@
             android:layout_marginTop="@dimen/margin_large"
             android:layout_marginEnd="@dimen/margin_large"
             android:text="@string/ringbell_label"
+            android:textColor="@color/white"
             android:textSize="@dimen/text_size_default"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -110,6 +139,7 @@
                 android:layout_marginStart="@dimen/margin_default"
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/ringtone_label"
+                android:textColor="@color/white"
                 android:textSize="@dimen/text_size_default"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/ringbell_imageview"
@@ -123,6 +153,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:layout_marginBottom="@dimen/margin_small"
                 android:textSize="@dimen/text_size_default"
+                android:textColor="@color/teal_200"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/ringbell_textview"
                 app:layout_constraintTop_toBottomOf="@id/ringbell_textview"
@@ -148,7 +179,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_default"
             android:onClick="@{() -> viewModel.onSaveReminder()}"
+            android:background="@drawable/button_red"
             android:text="@string/save_button_label"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

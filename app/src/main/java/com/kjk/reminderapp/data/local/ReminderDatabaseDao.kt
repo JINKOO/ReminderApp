@@ -38,14 +38,14 @@ interface ReminderDatabaseDao {
      *  특정 Reminder를 get하는 함수,
      */
     @Query("SELECT * FROM reminder_table WHERE reminderId = :reminderId")
-    suspend fun get(reminderId: Long): ReminderEntity?
+     suspend fun get(reminderId: Long): ReminderEntity?
 
 
     /**
      *  database의 table에서
      *  모든 Reminder를 가져오는 함수
      */
-    @Query("SELECT * FROM reminder_table ORDER BY reminderId ASC")
+    @Query("SELECT * FROM reminder_table ORDER BY settingTime ASC")
     fun getAllReminders(): LiveData<List<ReminderEntity>>
 
 }

@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.kjk.reminderapp.R
 import com.kjk.reminderapp.data.local.ReminderDatabase
 import com.kjk.reminderapp.databinding.FragmentReminderDetailBinding
+import com.kjk.reminderapp.presenter.reminderalarm.AlarmFunctions
 import com.kjk.reminderapp.presenter.util.SelectRingtoneContract
 
 /**
@@ -44,14 +46,21 @@ class ReminderDetailFragment : Fragment() {
 
 
     /**
+     *  alarm function
+     */
+    private val alarmFunction by lazy {
+        AlarmFunctions(requireActivity())
+    }
+
+
+    /**
      * 시스템 ringtone 선택 화면에서
      * 사용자가 선택한 ringtone result처리
      */
     private val launcher: ActivityResultLauncher<Int> =
         registerForActivityResult(SelectRingtoneContract()) { result ->
             result?.let {
-                Log.d(TAG, "${result}, ${RingtoneManager.getRingtone(requireActivity(), result).getTitle(activity)}")
-
+                //Log.d(TAG, "${result}, ${RingtoneManager.getRingtone(requireActivity(), result).getTitle(requireActivity())}")
                 val ringtone = RingtoneManager.getRingtone(requireActivity(), result)
                 viewModel.setRingtone(result.toString(), ringtone.getTitle(requireActivity()))
             }
@@ -74,21 +83,18 @@ class ReminderDetailFragment : Fragment() {
             false
         )
 
-        // init viewModel
-        val application = requireNotNull(activity).application
-        val dataSource = ReminderDatabase.getInstance(application)
-
         // safe-args
         val arguments = ReminderDetailFragmentArgs.fromBundle(requireArguments())
         Log.d(TAG, "onCreateView: arguments : ${arguments.reminderId}")
 
         // init viewModel
-        viewModelFactory = ReminderViewModelFactory(dataSource, arguments.reminderId)
+        viewModelFactory = ReminderViewModelFactory(arguments.reminderId, alarmFunction)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ReminderDetailViewModel::class.java)
 
         // init databinding
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
+
 
         return binding.root
     }
@@ -97,7 +103,6 @@ class ReminderDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLayout()
-        Log.d(TAG, "onViewCreated: ${viewModel.reminder.value}")
         observe()
     }
 
@@ -106,6 +111,9 @@ class ReminderDetailFragment : Fragment() {
      *  layout 초기화
      */
     private fun initLayout() {
+
+        val supportActionBar = requireActivity().actionBar
+        supportActionBar?.setTitle(R.string.toolbar_title_detail)
         if (viewModel.reminderSettingTaskType == ReminderSettingTaskType.CREATE) {
             setDefaultRingTone()
         }
@@ -117,6 +125,10 @@ class ReminderDetailFragment : Fragment() {
      *  ViewModel의 LiveData Observe
      */
     private fun observe() {
+        viewModel.reminder.observe(viewLifecycleOwner, Observer {
+            Log.d(TAG, "observe: ${it}")
+        })
+
         viewModel.navigateToHome.observe(viewLifecycleOwner, Observer { toMove ->
             if (toMove) {
                 // HomeFragment로 이동
@@ -129,6 +141,14 @@ class ReminderDetailFragment : Fragment() {
             if (toMove) {
                 moveToSystemRingtone()
                 viewModel.navigateToSelectRingtoneDone()
+            }
+        })
+
+        viewModel.showInputCheckMessage.observe(viewLifecycleOwner, Observer { toShowMessage ->
+            if (toShowMessage) {
+                showToastMessage()
+                viewModel.showInputCheckMessageDone()
+
             }
         })
     }
@@ -170,18 +190,11 @@ class ReminderDetailFragment : Fragment() {
                     start: Int,
                     count: Int,
                     after: Int
-                ) {
-                    Log.d(TAG, "beforeTextChanged: ${s}")
-                }
-
+                ) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d(TAG, "onTextChanged: ${s}")
                     viewModel.setReminderTitle(s.toString())
                 }
-
-                override fun afterTextChanged(s: Editable?) {
-                    Log.d(TAG, "afterTextChanged: ${s.toString()}")
-                }
+                override fun afterTextChanged(s: Editable?) {}
             })
         }
     }
@@ -193,7 +206,7 @@ class ReminderDetailFragment : Fragment() {
     private fun setTimePicker() {
         binding.timePicker.apply {
             setOnTimeChangedListener { view, hourOfDay, minute ->
-                Log.d(TAG, "setTimePicker: ${hourOfDay}, ${minute}")
+                //Log.d(TAG, "setTimePicker: ${hourOfDay}, ${minute}")
                 // database에 저장하기위해, 지정한 알림 시간을 milliseconds로 변환.
                 viewModel.setReminderTime(hourOfDay, minute)
             }
@@ -209,6 +222,14 @@ class ReminderDetailFragment : Fragment() {
         val ringtone = RingtoneManager.getRingtone(requireActivity(), defaultRingtoneUri)
         Log.d(TAG, "initLayout: CREATE ${ringtone.getTitle(requireActivity())}")
         viewModel.setRingtone(defaultRingtoneUri.toString(), ringtone.getTitle(requireActivity()))
+    }
+
+
+    /**
+     *  Toast message를 보여주는 함수.
+     */
+    private fun showToastMessage() {
+        Toast.makeText(requireActivity(), getString(R.string.all_input_check_message), Toast.LENGTH_SHORT).show()
     }
 
 
