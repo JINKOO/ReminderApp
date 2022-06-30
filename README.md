@@ -1,5 +1,5 @@
 # ReminderApp Task (~ 2022.6.30)
-# READE.md의 commit이력을 보시면, 진행상황을 알 수 있습니다) 
+# README.md의 commit이력을 보시면, 진행상황을 알 수 있습니다.
 
 #. Feature List 진행 상황
 ----------
