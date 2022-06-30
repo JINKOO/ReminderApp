@@ -1,5 +1,7 @@
 package com.kjk.reminderapp.presenter.util
 
+import android.content.Context
+import android.widget.Toast
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -10,6 +12,7 @@ import java.util.*
  *  리스트 아이템에 보여줄 setting time format
  */
 private const val TIME_FORMAT = "hh:mm a"
+private const val TIME_FORMAT_24HOUR = "HH:mm"
 
 
 /**
@@ -47,4 +50,8 @@ fun LocalDateTime.toMilliSeconds(): Long {
  */
 fun LocalDateTime.toTimeFormat(): String {
     return this.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
+}
+
+fun LocalDateTime.toTimeFormat24Hour(): String {
+    return this.format(DateTimeFormatter.ofPattern(TIME_FORMAT_24HOUR))
 }

@@ -4,6 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.kjk.reminderapp.presenter.reminderalarm.ReminderAlarmViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -13,54 +20,53 @@
             android:id="@+id/reminder_alarm_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="36sp"
-            tools:text="내시경 약 먹기"
-            android:text="내시경 약 먹기"
-            android:gravity="center"
+            android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:gravity="center"
+            android:text="@{viewModel.reminder.title}"
+            android:textSize="36sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+
+            tools:text="내시경 약 먹기" />
 
 
         <TextView
-            android:id="@+id/reminder_alarm_time"
+            android:id="@+id/reminder_alarm_time_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="72sp"
-            tools:text="08:00"
-            android:gravity="center"
+            android:layout_marginStart="@dimen/margin_large"
             android:layout_marginTop="@dimen/margin_large"
-            app:layout_constraintTop_toBottomOf="@id/reminder_alarm_title"
-            app:layout_constraintBottom_toTopOf="@+id/dismiss_button"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:gravity="center"
+            android:textSize="100sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            app:currentAlarmTime="@{viewModel.reminder}"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-<!--        <TimePicker-->
-<!--            android:id="@+id/time_picker"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:timePickerMode="spinner"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/dismiss_button"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/reminder_alarm_time" />-->
-
-
-<!--        <Button-->
-<!--            android:id="@+id/button_set"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="set"-->
-<!--            app:layout_constraintBottom_toTopOf="@id/dismiss_button"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent" />-->
+            app:layout_constraintTop_toBottomOf="@id/reminder_alarm_title"
+            tools:text="18:30" />
 
         <Button
             android:id="@+id/dismiss_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginEnd="@dimen/margin_large"
+            android:onClick="@{() -> viewModel.onDismissEvent()}"
+            android:padding="@dimen/padding_large"
             android:text="@string/dismiss_label"
+            android:textSize="@dimen/text_size_large"
+            android:background="@drawable/button_red"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/reminder_alarm_time_textview"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

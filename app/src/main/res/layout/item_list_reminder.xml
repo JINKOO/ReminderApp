@@ -26,7 +26,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="@{() -> callBack.onItemClick(reminder)}"
-        android:layout_marginBottom="@dimen/margin_large" >
+        android:layout_marginBottom="@dimen/margin_large"
+        android:background="@drawable/layout_item_reminder">
 
         <ImageView
             android:id="@+id/reminder_imageview"
@@ -46,6 +47,7 @@
             android:layout_marginTop="@dimen/margin_default"
             android:layout_marginStart="@dimen/margin_default"
             android:textStyle="bold"
+            android:textColor="@color/white"
             android:textSize="@dimen/text_size_default"
             app:layout_constraintStart_toEndOf="@id/reminder_imageview"
             app:layout_constraintTop_toTopOf="parent"

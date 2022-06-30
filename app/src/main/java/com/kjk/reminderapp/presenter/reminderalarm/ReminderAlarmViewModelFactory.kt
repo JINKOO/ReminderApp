@@ -1,21 +1,23 @@
-package com.kjk.reminderapp.presenter.reminderdetail
-
+package com.kjk.reminderapp.presenter.reminderalarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.kjk.reminderapp.data.local.ReminderDatabase
-import com.kjk.reminderapp.data.local.ReminderDatabaseDao
-import com.kjk.reminderapp.data.local.ReminderEntity
+import java.lang.IllegalArgumentException
 
-class ReminderViewModelFactory(
+
+/**
+ *  viewModel factory pattern
+ */
+class ReminderAlarmViewModelFactory(
     private val reminderId: Long
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ReminderDetailViewModel::class.java)) {
-            return ReminderDetailViewModel(reminderId) as T
+        if (modelClass.isAssignableFrom(ReminderAlarmViewModel::class.java)) {
+            return ReminderAlarmViewModel(reminderId) as T
         }
-
         throw IllegalArgumentException("Unknown viewModel class")
     }
+
 }

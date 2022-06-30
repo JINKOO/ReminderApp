@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.kjk.reminderapp.domain.vo.ReminderVO
+import com.kjk.reminderapp.presenter.util.toLocalDateTime
+import java.time.LocalDateTime
 
 /**
  *  알람 생성 및 취소를 담당한다.
@@ -19,9 +21,10 @@ class AlarmFunctions(private val context: Context) {
      */
     fun callAlarm(reminder: ReminderVO) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
         // receiver로 전달될 인텐트 설정
         val receiverIntent = Intent(context, AlarmReceiver::class.java)
-        // 요청 코드와 내용을 리시버로 전달
+
         Log.d(TAG, "callAlarm: ${reminder} ")
         receiverIntent.putExtra("reminder", reminder)
 
@@ -43,18 +46,19 @@ class AlarmFunctions(private val context: Context) {
     /**
      *  alarm을 취소한다.
      */
-    fun cancelAlarm(alarmCode: Int) {
+    fun cancelAlarm(alarmId: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
-            alarmCode,
+            alarmId,
             intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE
         )
 
         alarmManager.cancel(pendingIntent)
     }
+
 
     companion object {
         private const val TAG = "AlarmFunctions"

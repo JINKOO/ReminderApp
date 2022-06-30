@@ -38,7 +38,7 @@ interface ReminderDatabaseDao {
      *  특정 Reminder를 get하는 함수,
      */
     @Query("SELECT * FROM reminder_table WHERE reminderId = :reminderId")
-    suspend fun get(reminderId: Long): ReminderEntity?
+    suspend fun getR(reminderId: Long): ReminderEntity?
 
 
     /**
