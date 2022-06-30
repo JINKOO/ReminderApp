@@ -12,4 +12,9 @@
     <string name="all_input_check_message">리마인더 제목을 입력해 주세요~</string>
     <string name="toolbar_title_home">리마인드</string>
     <string name="toolbar_title_detail">리마인드 설정</string>
+    <string name="dialog_title">다른 앱 위에 표시 권한</string>
+    <string name="dialog_message">[다른 앱 위에 표시] 권한을 허용해야 잠금화면에서 알람이 정상 작동합니다. 취소를 선택 할 시 앱이 종료됩니다.</string>
+    <string name="dialog_positive_button">권한 설정 하러 가기</string>
+    <string name="dialog_cancel_button">취소</string>
+    <string name="permission_require_toast">권한을 반드시 설정해주세요.</string>
 </resources>

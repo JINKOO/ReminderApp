@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             tools:text="08:00AM"
             android:layout_marginTop="@dimen/margin_default"
-            android:layout_marginStart="@dimen/margin_default"
+            android:layout_marginStart="@dimen/margin_large"
             android:textStyle="bold"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_default"
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="내시경 약먹기"
-            android:text="@{reminder.title + reminder.Id}"
+            android:text="@{reminder.title}"
             android:textStyle="bold"
             android:textSize="@dimen/text_size_default"
             app:layout_constraintStart_toStartOf="@id/setting_time_textview"
@@ -67,6 +67,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="@dimen/margin_default"
             android:layout_marginBottom="@dimen/margin_default"/>
+
+        <ImageView
+            android:id="@+id/move_next_imageview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_default"
+            android:src="@drawable/ic_baseline_navigate_next_24"
+            app:layout_constraintStart_toEndOf="@+id/reminder_title"
+            app:layout_constraintTop_toTopOf="@id/reminder_title"
+            app:layout_constraintBottom_toBottomOf="@id/reminder_title"/>
+
 
         <CheckBox
             android:id="@+id/reminder_checkBox"

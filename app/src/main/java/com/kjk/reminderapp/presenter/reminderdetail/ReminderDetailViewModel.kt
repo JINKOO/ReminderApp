@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.kjk.reminderapp.data.mapper.toDomainModel
 import com.kjk.reminderapp.domain.repo.ReminderRepository
 import com.kjk.reminderapp.domain.vo.ReminderVO
+import com.kjk.reminderapp.presenter.reminderalarm.AlarmFunctions
 import com.kjk.reminderapp.presenter.util.toLocalDateTime
 import com.kjk.reminderapp.presenter.util.toMilliSeconds
 import kotlinx.coroutines.launch
@@ -15,7 +16,8 @@ import java.time.LocalDateTime
  *  reminder detail화면에서 사용할 viewModel
  */
 class ReminderDetailViewModel(
-    private val reminderId: Long
+    private val reminderId: Long,
+    private val alarmFunctions: AlarmFunctions
 ) : ViewModel() {
 
     /**
@@ -98,10 +100,34 @@ class ReminderDetailViewModel(
     lateinit var reminderSettingTaskType: ReminderSettingTaskType
 
 
+    /**
+     *
+     */
+    private lateinit var getFromDatabaseReminder: ReminderVO
+
+
     init {
         Log.d(TAG, "init: ${reminder.value}")
         setReminderSettingTaskType()
+        /**
+         *  updateReminder()함수에서 repository.get(reminderId)이 null값으로 정상 동작하지 않아,
+         *  임시 방어 코드로 여기서 get한다.
+         */
+        getReminderToUpdate()
         _reminderSettingTime.value = getDefaultSettingTime()
+    }
+
+
+    /**
+     *  방어코드
+     */
+    private fun getReminderToUpdate() {
+        viewModelScope.launch {
+            Log.d(TAG, "testGet: ")
+            getFromDatabaseReminder = repository.get(reminderId) ?: return@launch
+            Log.d("ThreadName","TestGet ${Thread.currentThread().name}")
+            Log.d(TAG, "testGet!!: ${getFromDatabaseReminder}")
+        }
     }
 
 
@@ -130,17 +156,36 @@ class ReminderDetailViewModel(
         if (!isAllInputValid()) {
             return
         }
+        if (isBeforeCurrentTime()) {
+            setReminderTimeToNextDay()
+        }
         when (reminderSettingTaskType) {
             ReminderSettingTaskType.CREATE -> {
                 createReminder()
             }
             ReminderSettingTaskType.UPDATE -> {
-                Log.d(TAG, "onSaveReminder: hehehe")
                 updateReminder()
+                updatePreviousActivateAlarm()
             }
         }
         _navigateToHome.value = true
     }
+
+
+    /**
+     *  alarm이 이미 활성화되어 있는 reminder를 수정하는 경우
+     *  사용하지 않음
+     */
+    private fun updatePreviousActivateAlarm() {
+        if (getFromDatabaseReminder.isActivate) {
+            // 기존의 alarm을 취소하고,
+            Log.d(TAG, "updatePreviousActivateAlarm: ${getFromDatabaseReminder.id}")
+            alarmFunctions.cancelAlarm(getFromDatabaseReminder.id.toInt())
+            // 다시 등록한다.
+            alarmFunctions.callAlarm(getFromDatabaseReminder)
+        }
+    }
+
 
 
     /**
@@ -166,9 +211,7 @@ class ReminderDetailViewModel(
     private fun createReminder() {
         viewModelScope.launch {
             Log.d(TAG, "createReminder: ${reminderTitle.value}")
-            if (isBeforeCurrentTime()) {
-                setReminderTimeToNextDay()
-            }
+
             val newReminder = ReminderVO(
                 id = reminderId,
                 title = reminderTitle.value!!,
@@ -187,25 +230,26 @@ class ReminderDetailViewModel(
     private fun updateReminder() {
         viewModelScope.launch {
             Log.d(TAG, "updateReminder!!: ${reminderId}")
-            val currentReminder = repository.get(reminderId) ?: return@launch
+            Log.e("ThreadReminder1","TestGet ${Thread.currentThread().name}")
+            // 여긴 왜 안될까?
+            //val currentReminder = repository.get(reminderId) ?: return@launch
+            Log.d(TAG, "updateReminder!!: ${getFromDatabaseReminder}")
 
-            Log.d(TAG, "updateReminder: get result : ${currentReminder}")
 
             /**
              *  update Reminder
              *  update인데 아무 내용을 건드리리 않으면,
              *  기존의 값으로, update한다.
              */
-            currentReminder.run {
-                //id = reminderId
-                title = reminderTitle.value ?: "dffdfdfd"
+            getFromDatabaseReminder.run {
+                title = reminderTitle.value ?: title
                 settingTime = reminderSettingTime.value ?: settingTime
                 ringTonePath = ringtonePath.value ?: ringTonePath
                 ringToneTitle = ringtoneTitle.value ?: ringToneTitle
             }
 
-            // update
-            update(currentReminder.toDomainModel())
+            //update
+            update(getFromDatabaseReminder)
         }
         Log.d(TAG, "updateReminder: here")
     }

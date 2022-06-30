@@ -19,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.kjk.reminderapp.R
 import com.kjk.reminderapp.data.local.ReminderDatabase
 import com.kjk.reminderapp.databinding.FragmentReminderDetailBinding
+import com.kjk.reminderapp.presenter.reminderalarm.AlarmFunctions
 import com.kjk.reminderapp.presenter.util.SelectRingtoneContract
 
 /**
@@ -45,14 +46,21 @@ class ReminderDetailFragment : Fragment() {
 
 
     /**
+     *  alarm function
+     */
+    private val alarmFunction by lazy {
+        AlarmFunctions(requireActivity())
+    }
+
+
+    /**
      * 시스템 ringtone 선택 화면에서
      * 사용자가 선택한 ringtone result처리
      */
     private val launcher: ActivityResultLauncher<Int> =
         registerForActivityResult(SelectRingtoneContract()) { result ->
             result?.let {
-                Log.d(TAG, "${result}, ${RingtoneManager.getRingtone(requireActivity(), result).getTitle(activity)}")
-
+                //Log.d(TAG, "${result}, ${RingtoneManager.getRingtone(requireActivity(), result).getTitle(requireActivity())}")
                 val ringtone = RingtoneManager.getRingtone(requireActivity(), result)
                 viewModel.setRingtone(result.toString(), ringtone.getTitle(requireActivity()))
             }
@@ -80,7 +88,7 @@ class ReminderDetailFragment : Fragment() {
         Log.d(TAG, "onCreateView: arguments : ${arguments.reminderId}")
 
         // init viewModel
-        viewModelFactory = ReminderViewModelFactory(arguments.reminderId)
+        viewModelFactory = ReminderViewModelFactory(arguments.reminderId, alarmFunction)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ReminderDetailViewModel::class.java)
 
         // init databinding
@@ -105,9 +113,7 @@ class ReminderDetailFragment : Fragment() {
     private fun initLayout() {
 
         val supportActionBar = requireActivity().actionBar
-        supportActionBar?.let {
-            it.setTitle(R.string.toolbar_title_detail)
-        }
+        supportActionBar?.setTitle(R.string.toolbar_title_detail)
         if (viewModel.reminderSettingTaskType == ReminderSettingTaskType.CREATE) {
             setDefaultRingTone()
         }
@@ -120,7 +126,7 @@ class ReminderDetailFragment : Fragment() {
      */
     private fun observe() {
         viewModel.reminder.observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "observeaaaaaaaaa: ${it}")
+            Log.d(TAG, "observe: ${it}")
         })
 
         viewModel.navigateToHome.observe(viewLifecycleOwner, Observer { toMove ->

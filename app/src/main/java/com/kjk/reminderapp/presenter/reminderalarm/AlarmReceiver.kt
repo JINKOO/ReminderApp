@@ -10,7 +10,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.kjk.reminderapp.MainActivity
+import com.kjk.reminderapp.presenter.MainActivity
 import com.kjk.reminderapp.R
 import com.kjk.reminderapp.domain.vo.ReminderVO
 
@@ -62,34 +62,34 @@ class AlarmReceiver : BroadcastReceiver() {
          *  사용자가 app을 실행하는 동안, 이 Activity로 이동해야하는 경우는 없으므로,
          *  Activity가 기존의 back stack에 추가되는 대신에 새 작업을 시작한다.
          */
-//        val intentToMain = Intent(context, MainActivity::class.java)
-//            .apply {
-//                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//            }
+        val intentToMain = Intent(context, MainActivity::class.java)
+            .apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
 
-//        val pendingIntent = PendingIntent.getActivity(
-//            context,
-//            reminder!!.id.toInt(),
-//            intentToMain,
-//            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-//        )
-//
-//
-//        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.ic_baseline_access_alarm_24)
-//            .setContentTitle(reminder.title)
-//            .setContentText(reminder.title)
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            // 사용자가 탭하면, 자동 알림 삭제
-//            .setAutoCancel(true)
-//            // 사용자가 탭하면, 이동해야할 intent를 지정.
-//            .setContentIntent(pendingIntent)
-//            .build()
-//
-//        with(NotificationManagerCompat.from(context)) {
-//            Log.d(TAG, "onReceive: ")
-//            notify(1, notification)
-//        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            reminder!!.id.toInt(),
+            intentToMain,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_baseline_access_alarm_24)
+            .setContentTitle(reminder.title)
+            .setContentText(reminder.title)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            // 사용자가 탭하면, 자동 알림 삭제
+            .setAutoCancel(true)
+            // 사용자가 탭하면, 이동해야할 intent를 지정.
+            .setContentIntent(pendingIntent)
+            .build()
+
+        with(NotificationManagerCompat.from(context)) {
+            Log.d(TAG, "onReceive: ")
+            notify(1, notification)
+        }
     }
 
     companion object {

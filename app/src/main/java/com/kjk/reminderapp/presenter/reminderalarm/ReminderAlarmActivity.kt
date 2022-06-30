@@ -7,9 +7,8 @@ import android.util.Log
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.kjk.reminderapp.MainActivity
+import com.kjk.reminderapp.presenter.MainActivity
 import com.kjk.reminderapp.R
-import com.kjk.reminderapp.data.local.ReminderDatabase
 import com.kjk.reminderapp.databinding.ActivityReminderAlarmBinding
 import com.kjk.reminderapp.domain.vo.ReminderVO
 
@@ -97,6 +96,7 @@ class ReminderAlarmActivity : AppCompatActivity() {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         startActivity(intent)
+        finish()
     }
 
     companion object {

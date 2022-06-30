@@ -62,15 +62,9 @@ class ReminderHomeFragment : Fragment() {
 
                 // alarm 설정
                 if (isChecked) {
-                    // alarm을 설정한다.
                     Log.d(TAG, "${reminder.title} 알람이 설정되었습니다.")
-
-                    // viewModel로 옮길 것.
-                    alarmFunction.callAlarm(
-                        reminder
-                    )
+                    alarmFunction.callAlarm(reminder)
                 } else {
-                    // 알람 해제한다.
                     Log.d(TAG, "알람이 해제 되었습니다.")
                     alarmFunction.cancelAlarm(reminder.id.toInt())
                 }

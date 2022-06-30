@@ -11,10 +11,15 @@ import com.kjk.reminderapp.data.mapper.toDatabaseModel
 import com.kjk.reminderapp.data.mapper.toDomainListModel
 import com.kjk.reminderapp.data.mapper.toDomainModel
 import com.kjk.reminderapp.domain.vo.ReminderVO
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 /**
  *  Repository
- *  TODO 추후, 리펙토링 필요
+ *
  */
 class ReminderRepository(
     application: Application
@@ -69,12 +74,10 @@ class ReminderRepository(
     /**
      *  reminderID를 가지고, ReminderEntity형으로 fetch한다.
      */
-    suspend fun get(reminderId: Long): ReminderEntity? {
-        Log.d(TAG, "get!!!: ${reminderId}")
-        val reminder = database.reminderDatabaseDao.getR(reminderId)
-        Log.d(TAG, "getReminder: ${reminder}")
+    suspend fun get(reminderId: Long): ReminderVO? {
+        val reminder = database.reminderDatabaseDao.get(reminderId)?.toDomainModel()
+        Log.d(TAG, "get!!!: ${reminder}")
         return reminder
-        //return database.reminderDatabaseDao.get(reminderId)!!.toDomainModel()
     }
 
 
@@ -84,9 +87,7 @@ class ReminderRepository(
     companion object {
 
         private const val TAG = "ReminderRepository"
-
         private var INSTANCE: ReminderRepository? = null
-
         fun initialize(application: Application) {
             if (INSTANCE == null) {
                 INSTANCE = ReminderRepository(application)
@@ -94,7 +95,8 @@ class ReminderRepository(
         }
 
         fun getInstance(): ReminderRepository {
-            return INSTANCE ?: throw IllegalStateException("ReminderRepository must be initialized!")
+            return INSTANCE
+                ?: throw IllegalStateException("ReminderRepository must be initialized!")
         }
     }
 }
