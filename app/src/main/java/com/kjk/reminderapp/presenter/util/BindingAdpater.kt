@@ -55,7 +55,6 @@ fun setTimeFormat(textView: TextView, settingTime: Long?) {
  */
 @BindingAdapter("editTextValue")
 fun setReminderTitle(editText: EditText, reminder: ReminderVO?) {
-    Log.d(TAG, "setReminderTitle: ")
     reminder?.let {
         Log.d(TAG, "setReminderTitle: ${reminder}")
         editText.run {
@@ -123,6 +122,17 @@ fun setRingtoneTitleFromEntity(textView: TextView, reminder: ReminderVO?) {
 fun setCheckBox(checkBox: CheckBox, reminder: ReminderVO?) {
     reminder?.let {
         checkBox.isChecked = reminder.isActivate
+    }
+}
+
+
+/**
+ *  reminder alarm화면의 alarm 시간 set
+ */
+@BindingAdapter("currentAlarmTime")
+fun setCurrentAlarmTimeText(textView: TextView, reminder: ReminderVO?) {
+    reminder?.let {
+        textView.text = reminder.settingTime.toLocalDateTime().toTimeFormat24Hour()
     }
 }
 

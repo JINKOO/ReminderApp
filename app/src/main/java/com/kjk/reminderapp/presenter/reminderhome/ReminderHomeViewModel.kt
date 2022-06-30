@@ -20,8 +20,8 @@ class ReminderHomeViewModel(
     /**
      *  repository
      */
-    private val reminderRepository =
-        ReminderRepository(ReminderDatabase.getInstance(application))
+    private val reminderRepository = ReminderRepository.getInstance()
+//        ReminderRepository(ReminderDatabase.getInstance(application))
 
 
     /**

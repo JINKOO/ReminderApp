@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
+import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContract
+import com.kjk.reminderapp.BuildConfig
 
 
 /**
@@ -16,8 +18,9 @@ import androidx.activity.result.contract.ActivityResultContract
  */
 class SelectRingtoneContract : ActivityResultContract<Int, Uri?>() {
     override fun createIntent(context: Context, ringtoneType: Int?): Intent {
-        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER)
-        intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, ringtoneType)
+        val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+            putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, ringtoneType)
+        }
         return intent
     }
 

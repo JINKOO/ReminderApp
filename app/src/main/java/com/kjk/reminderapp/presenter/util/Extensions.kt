@@ -10,6 +10,7 @@ import java.util.*
  *  리스트 아이템에 보여줄 setting time format
  */
 private const val TIME_FORMAT = "hh:mm a"
+private const val TIME_FORMAT_24HOUR = "HH:mm"
 
 
 /**
@@ -29,15 +30,6 @@ fun Long.toLocalDateTime(): LocalDateTime {
  *  다시 Long 타입으로 변환
  */
 fun LocalDateTime.toMilliSeconds(): Long {
-//    val now = LocalDateTime.now()
-//    val localDateTime = LocalDateTime.of(
-//        now.year,
-//        now.monthValue,
-//        now.dayOfMonth,
-//        hourOfDay,
-//        minute,
-//        0
-//    )
     return this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }
 
@@ -47,4 +39,8 @@ fun LocalDateTime.toMilliSeconds(): Long {
  */
 fun LocalDateTime.toTimeFormat(): String {
     return this.format(DateTimeFormatter.ofPattern(TIME_FORMAT))
+}
+
+fun LocalDateTime.toTimeFormat24Hour(): String {
+    return this.format(DateTimeFormatter.ofPattern(TIME_FORMAT_24HOUR))
 }
